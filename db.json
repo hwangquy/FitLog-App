@@ -4,7 +4,15 @@
       "id": "u1",
       "name": "Lưu Văn Quốc",
       "email": "quoc@example.com",
-      "password": "123"
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "id": "u2",
+      "name": "Nguyễn Văn A",
+      "email": "a@example.com",
+      "password": "123",
+      "role": "user"
     }
   ],
   "workouts": [

@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Switch, View } from "react-native";
 import {
   AppButton,
@@ -16,12 +16,12 @@ import { API_BASE_URL } from "../../src/config/env";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { isAiConfigured } from "../../src/services/ai";
 import { pingApi } from "../../src/services/api";
-import { authService } from "../../services/authService";
+import { authService, User } from "../../services/authService";
 import { useAppDispatch, useAppSelector } from "../../src/store/hooks";
 import { setAiConsent, setThemeMode } from "../../src/store/settingsSlice";
 import type { ThemeMode } from "../../src/theme/colors";
 import { errorMessage } from "../../src/utils/format";
-import { showConfirmDialog } from "../../src/utils/alert"; // 👈 Import helper vừa tạo
+import { showConfirmDialog } from "../../src/utils/alert";
 
 const MODES: { mode: ThemeMode; label: string }[] = [
   { mode: "system", label: "Theo hệ thống" },
@@ -33,10 +33,19 @@ export default function ProfileScreen() {
   const dispatch = useAppDispatch();
   const { colors, mode } = useAppTheme();
   const consent = useAppSelector((s) => s.settings.aiConsent);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [check, setCheck] = useState<{
     status: "idle" | "loading" | "ok" | "error";
     text?: string;
   }>({ status: "idle" });
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await authService.getCurrentUser();
+      setCurrentUser(user);
+    };
+    void loadUser();
+  }, []);
 
   const testConnection = async () => {
     setCheck({ status: "loading" });
@@ -48,7 +57,6 @@ export default function ProfileScreen() {
     }
   };
 
-  // Hàm xử lý Đăng xuất dùng chung cho cả Web & Mobile
   const handleLogout = () => {
     showConfirmDialog(
       "Xác nhận đăng xuất",
@@ -93,6 +101,73 @@ export default function ProfileScreen() {
   return (
     <Screen>
       <ScreenHeader eyebrow="Tài khoản" title="Cá nhân" />
+
+      {/* Thông tin User & Badge Phân Quyền */}
+      {currentUser && (
+        <Card style={{ marginBottom: 4 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: colors.brand,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <AppText weight="bold" style={{ color: "#FFF", fontSize: 20 }}>
+                {currentUser.name
+                  ? currentUser.name.charAt(0).toUpperCase()
+                  : "U"}
+              </AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <AppText weight="bold" size="lg">
+                  {currentUser.name || "Người dùng FitLog"}
+                </AppText>
+                {currentUser.role === "admin" && (
+                  <View
+                    style={{
+                      backgroundColor: "#2563EB",
+                      paddingHorizontal: 8,
+                      paddingVertical: 2,
+                      borderRadius: 6,
+                    }}
+                  >
+                    <AppText weight="bold" size="xs" style={{ color: "#FFF" }}>
+                      ADMIN
+                    </AppText>
+                  </View>
+                )}
+              </View>
+              <AppText tone="muted" size="xs">
+                {currentUser.email}
+              </AppText>
+            </View>
+          </View>
+        </Card>
+      )}
+
+      {/* Thẻ Quản Trị Hệ Thống dành riêng cho ADMIN */}
+      {currentUser?.role === "admin" && (
+        <Card style={{ borderColor: "#2563EB", borderWidth: 1 }}>
+          <SectionTitle title="Quyền Quản Trị" />
+          <AppText tone="muted" size="sm">
+            Bạn có quyền truy cập vào bảng điều khiển thống kê và quản lý toàn
+            bộ người dùng.
+          </AppText>
+          <AppButton
+            label="Vào trang Admin Dashboard"
+            icon="analytics-outline"
+            variant="secondary"
+            onPress={() => router.push("/admin/dashboard" as any)}
+          />
+        </Card>
+      )}
 
       {link(
         "flag-outline",
