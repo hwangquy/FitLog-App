@@ -1,4 +1,12 @@
 {
+  "users": [
+    {
+      "id": "u1",
+      "name": "Lưu Văn Quốc",
+      "email": "quoc@example.com",
+      "password": "123"
+    }
+  ],
   "workouts": [
     {
       "id": "w1",
@@ -11,18 +19,19 @@
       "note": "Chạy nhẹ, giữ nhịp thở ổn định",
       "location": "Công viên gần nhà",
       "image": null,
+      "coords": null,
       "createdAt": "2026-10-26T06:10:00.000Z"
     },
     {
       "title": "Tập sức mạnh thân trên",
-      "type": "Đi bộ",
+      "type": "Gym",
       "date": "2026-10-28",
       "duration": 45,
       "distance": 0,
-      "calories": 320,
+      "calories": 330,
       "note": "Ngực, vai và tay",
-      "location": "10.25587, 105.15206",
-      "image": "blob:http://localhost:8081/16020c17-000a-4e3f-9e44-1c2b4a0bdc82",
+      "location": "Phòng tập Gym",
+      "image": null,
       "coords": {
         "latitude": 10.2558685,
         "longitude": 105.15206383333333
@@ -31,6 +40,7 @@
       "id": "w2"
     },
     {
+      "id": "w3",
       "title": "Đạp xe thư giãn",
       "type": "Đạp xe",
       "date": "2026-10-22",
@@ -40,8 +50,8 @@
       "note": "Đạp xe cùng bạn",
       "location": "Đường ven sông",
       "image": null,
-      "createdAt": "2026-10-22T10:30:00.000Z",
-      "id": "w3"
+      "coords": null,
+      "createdAt": "2026-10-22T10:30:00.000Z"
     },
     {
       "id": "w4",
@@ -54,18 +64,19 @@
       "note": "Buổi vận động nhẹ",
       "location": "Khu dân cư",
       "image": null,
+      "coords": null,
       "createdAt": "2026-10-20T12:00:00.000Z"
     }
   ],
   "goals": [
     {
+      "id": "g1",
       "title": "Vận động đều đặn",
       "metric": "sessions",
       "target": 5,
       "period": "week",
       "workoutType": "all",
-      "createdAt": "2026-10-20T00:00:00.000Z",
-      "id": "g1"
+      "createdAt": "2026-10-20T00:00:00.000Z"
     }
   ],
   "reminders": [
@@ -73,15 +84,7 @@
       "id": "r1",
       "title": "Nhắc lịch tập",
       "time": "18:30",
-      "days": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "days": [0, 1, 2, 3, 4, 5, 6],
       "enabled": true,
       "createdAt": "2026-10-20T00:00:00.000Z"
     }
