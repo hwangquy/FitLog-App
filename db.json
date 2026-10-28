@@ -1,0 +1,89 @@
+{
+  "workouts": [
+    {
+      "id": "w1",
+      "title": "Chạy bộ buổi sáng",
+      "type": "Chạy bộ",
+      "date": "2026-10-26",
+      "duration": 32,
+      "distance": 4.2,
+      "calories": 280,
+      "note": "Chạy nhẹ, giữ nhịp thở ổn định",
+      "location": "Công viên gần nhà",
+      "image": null,
+      "createdAt": "2026-10-26T06:10:00.000Z"
+    },
+    {
+      "title": "Tập sức mạnh thân trên",
+      "type": "Đi bộ",
+      "date": "2026-10-28",
+      "duration": 45,
+      "distance": 0,
+      "calories": 320,
+      "note": "Ngực, vai và tay",
+      "location": "10.25587, 105.15206",
+      "image": "blob:http://localhost:8081/16020c17-000a-4e3f-9e44-1c2b4a0bdc82",
+      "coords": {
+        "latitude": 10.2558685,
+        "longitude": 105.15206383333333
+      },
+      "createdAt": "2026-10-24T11:00:00.000Z",
+      "id": "w2"
+    },
+    {
+      "title": "Đạp xe thư giãn",
+      "type": "Đạp xe",
+      "date": "2026-10-22",
+      "duration": 50,
+      "distance": 12.5,
+      "calories": 390,
+      "note": "Đạp xe cùng bạn",
+      "location": "Đường ven sông",
+      "image": null,
+      "createdAt": "2026-10-22T10:30:00.000Z",
+      "id": "w3"
+    },
+    {
+      "id": "w4",
+      "title": "Đi bộ phục hồi",
+      "type": "Đi bộ",
+      "date": "2026-10-20",
+      "duration": 25,
+      "distance": 2.1,
+      "calories": 110,
+      "note": "Buổi vận động nhẹ",
+      "location": "Khu dân cư",
+      "image": null,
+      "createdAt": "2026-10-20T12:00:00.000Z"
+    }
+  ],
+  "goals": [
+    {
+      "title": "Vận động đều đặn",
+      "metric": "sessions",
+      "target": 5,
+      "period": "week",
+      "workoutType": "all",
+      "createdAt": "2026-10-20T00:00:00.000Z",
+      "id": "g1"
+    }
+  ],
+  "reminders": [
+    {
+      "id": "r1",
+      "title": "Nhắc lịch tập",
+      "time": "18:30",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "enabled": true,
+      "createdAt": "2026-10-20T00:00:00.000Z"
+    }
+  ]
+}

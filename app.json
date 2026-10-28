@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "FitLog",
+    "slug": "fitlog-mobile",
+    "scheme": "fitlog",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cho phép FitLog ghi nhận vị trí buổi tập khi bạn đồng ý."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cho phép FitLog chọn ảnh buổi tập khi bạn đồng ý."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "workout-reminders"
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "android": {
+      "package": "vn.fitlog.mobile"
+    },
+    "ios": {
+      "bundleIdentifier": "vn.fitlog.mobile"
+    }
+  }
+}
