@@ -32,10 +32,24 @@
       "typedRoutes": false
     },
     "android": {
-      "package": "vn.fitlog.mobile"
+      "package": "vn.fitlog.mobile",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
-      "bundleIdentifier": "vn.fitlog.mobile"
+      "bundleIdentifier": "vn.fitlog.mobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1806efad-ea27-4229-877f-542a40b36467"
+      }
     }
   }
 }
