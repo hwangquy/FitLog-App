@@ -62,7 +62,9 @@ const byTime = (a: Reminder, b: Reminder) => a.time.localeCompare(b.time);
 const slice = createSlice({
   name: 'reminders',
   initialState,
-  reducers: {},
+ reducers: {
+  clearReminders: () => initialState,
+},
   extraReducers: builder => {
     builder
       .addCase(fetchReminders.pending, state => {
@@ -97,4 +99,5 @@ const slice = createSlice({
   }
 });
 
+export const { clearReminders } = slice.actions;
 export default slice.reducer;

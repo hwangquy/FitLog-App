@@ -54,27 +54,31 @@ export default function RegisterScreen() {
       return;
     }
 
-    try {
-      setLoading(true);
-      if (authService.register) {
-        await authService.register(
-          fullName.trim(),
-          email.trim(),
-          password.trim(),
-        );
-      }
+    
+try {
+  setLoading(true);
 
-      Alert.alert("Thành công", "Đăng ký tài khoản thành công!", [
-        {
-          text: "Đăng nhập ngay",
-          onPress: () => router.push("/auth/login" as any),
-        },
-      ]);
-    } catch (error: any) {
-      Alert.alert("Lỗi đăng ký", error.message || "Đã có lỗi xảy ra.");
-    } finally {
-      setLoading(false);
-    }
+  await authService.register(
+    fullName.trim(),
+    email.trim(),
+    password
+  );
+
+  Alert.alert(
+    "Thành công",
+    "Tài khoản đã được tạo thành công!"
+  );
+
+  router.replace("/(tabs)");
+} catch (error: any) {
+  Alert.alert(
+    "Lỗi đăng ký",
+    error.message || "Đã có lỗi xảy ra."
+  );
+} finally {
+  setLoading(false);
+}
+
   };
 
   return (

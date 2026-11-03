@@ -42,7 +42,9 @@ const byCreated = (a: Goal, b: Goal) => (a.createdAt ?? '').localeCompare(b.crea
 const slice = createSlice({
   name: 'goals',
   initialState,
-  reducers: {},
+  reducers: {
+  clearGoals: () => initialState,
+},
   extraReducers: builder => {
     builder
       .addCase(fetchGoals.pending, state => {
@@ -69,4 +71,5 @@ const slice = createSlice({
   }
 });
 
+export const { clearGoals } = slice.actions;
 export default slice.reducer;

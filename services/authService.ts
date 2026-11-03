@@ -1,3 +1,4 @@
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../src/config/env";
 
@@ -8,81 +9,124 @@ export interface User {
   role: "admin" | "user";
 }
 
+function toSafeUser(raw: any): User {
+  return {
+    id: String(raw.id),
+    name: raw.name,
+    email: raw.email,
+    role: raw.role === "admin" ? "admin" : "user",
+  };
+}
+
+async function saveUser(raw: any): Promise<User> {
+  const user = toSafeUser(raw);
+
+  await AsyncStorage.setItem(
+    "user",
+    JSON.stringify(user)
+  );
+
+  return user;
+}
+
 export const authService = {
-  // 1. Đăng ký tài khoản mới (Mặc định gán role = "user")
-  register: async (name: string, email: string, password: string) => {
-    // Kiểm tra xem email đã tồn tại trong json-server chưa
+  register: async (
+    name: string,
+    email: string,
+    password: string
+  ): Promise<User> => {
+    const normalizedEmail = email.trim().toLowerCase();
+
     const checkRes = await fetch(
-      `${API_BASE_URL}/users?email=${encodeURIComponent(email.trim())}`,
+      `${API_BASE_URL}/users?email=${encodeURIComponent(normalizedEmail)}`
     );
-    const existingUsers = await checkRes.json();
-    if (existingUsers.length > 0) {
-      throw new Error("Email này đã được đăng ký sử dụng!");
+
+    if (!checkRes.ok) {
+      throw new Error("Không kiểm tra được email.");
     }
 
-    // Tạo tài khoản mới kèm thuộc tính role: "user"
+    const existingUsers = await checkRes.json();
+
+    if (existingUsers.length > 0) {
+      throw new Error("Email đã được đăng ký!");
+    }
+
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: name.trim(),
-        email: email.trim(),
-        password: password.trim(),
-        role: "user", // Mặc định tài khoản mới tạo là user
+        email: normalizedEmail,
+        password,
+        role: "user",
       }),
     });
 
-    if (!response.ok) throw new Error("Đăng ký thất bại!");
-    const newUser: User = await response.json();
-
-    // Tự động lưu phiên đăng nhập
-    await AsyncStorage.setItem("user", JSON.stringify(newUser));
-    return newUser;
-  },
-
-  // 2. Đăng nhập
-  login: async (email: string, password: string) => {
-    const response = await fetch(
-      `${API_BASE_URL}/users?email=${encodeURIComponent(email.trim())}&password=${encodeURIComponent(password.trim())}`,
-    );
-    const users = await response.json();
-
-    if (users.length === 0) {
-      throw new Error("Email hoặc mật khẩu không chính xác!");
+    if (!response.ok) {
+      throw new Error("Đăng ký thất bại!");
     }
 
-    const user: User = users[0];
-    // Lưu thông tin user (bao gồm id, name, email, role) vào bộ nhớ thiết bị
-    await AsyncStorage.setItem("user", JSON.stringify(user));
-    return user;
+    return saveUser(await response.json());
   },
 
-  // 3. Đăng xuất
-  logout: async () => {
+  login: async (
+    email: string,
+    password: string
+  ): Promise<User> => {
+    const response = await fetch(
+      `${API_BASE_URL}/users?email=${encodeURIComponent(email.trim().toLowerCase())}&password=${encodeURIComponent(password)}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Không kết nối được máy chủ.");
+    }
+
+    const users = await response.json();
+
+    if (!Array.isArray(users) || users.length === 0) {
+      throw new Error("Email hoặc mật khẩu không đúng!");
+    }
+
+    return saveUser(users[0]);
+  },
+
+  logout: async (): Promise<void> => {
     await AsyncStorage.removeItem("user");
   },
 
-  // 4. Lấy thông tin user hiện tại (Tự động đồng bộ role mới nhất từ db.json)
   getCurrentUser: async (): Promise<User | null> => {
     const userJson = await AsyncStorage.getItem("user");
+
     if (!userJson) return null;
 
-    const cachedUser: User = JSON.parse(userJson);
+    let cachedUser: User;
 
     try {
-      // Fetch lại dữ liệu mới nhất từ server dựa theo ID để cập nhật role mới
-      const res = await fetch(`${API_BASE_URL}/users/${cachedUser.id}`);
-      if (res.ok) {
-        const freshUser: User = await res.json();
-        // Cập nhật lại AsyncStorage với dữ liệu mới nhất
-        await AsyncStorage.setItem("user", JSON.stringify(freshUser));
-        return freshUser;
-      }
-    } catch (e) {
-      // Trường hợp không kết nối được API thì fallback lấy dữ liệu cache từ AsyncStorage
-      console.log("Không thể làm mới dữ liệu user từ server, sử dụng cache.");
+      cachedUser = toSafeUser(JSON.parse(userJson));
+    } catch {
+      await AsyncStorage.removeItem("user");
+      return null;
     }
 
-    return cachedUser;
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/users/${encodeURIComponent(cachedUser.id)}`
+      );
+
+      if (response.status === 404) {
+        await AsyncStorage.removeItem("user");
+        return null;
+      }
+
+      if (!response.ok) {
+        return cachedUser;
+      }
+
+      return saveUser(await response.json());
+    } catch {
+      return cachedUser;
+    }
   },
 };

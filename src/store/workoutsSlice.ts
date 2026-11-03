@@ -102,11 +102,18 @@ const slice = createSlice({
   name: 'workouts',
   initialState,
   reducers: {
-    setListFilters(state, a: { payload: { query: string; type: WorkoutFilter } }) {
-      state.list.query = a.payload.query;
-      state.list.type = a.payload.type;
+  clearWorkouts: () => initialState,
+
+  setListFilters(state, a: {
+    payload: {
+      query: string;
+      type: WorkoutFilter;
     }
-  },
+  }) {
+    state.list.query = a.payload.query;
+    state.list.type = a.payload.type;
+  }
+},
   extraReducers: builder => {
     builder
       .addCase(fetchWorkoutPage.pending, (state, a) => {
@@ -165,5 +172,8 @@ const slice = createSlice({
   }
 });
 
-export const { setListFilters } = slice.actions;
+export const {
+  setListFilters,
+  clearWorkouts
+} = slice.actions;
 export default slice.reducer;

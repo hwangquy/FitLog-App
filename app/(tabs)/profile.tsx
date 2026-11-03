@@ -22,6 +22,9 @@ import { setAiConsent, setThemeMode } from "../../src/store/settingsSlice";
 import type { ThemeMode } from "../../src/theme/colors";
 import { errorMessage } from "../../src/utils/format";
 import { showConfirmDialog } from "../../src/utils/alert";
+import { clearWorkouts } from "../../src/store/workoutsSlice";
+import { clearGoals } from "../../src/store/goalsSlice";
+import { clearReminders } from "../../src/store/remindersSlice";
 
 const MODES: { mode: ThemeMode; label: string }[] = [
   { mode: "system", label: "Theo hệ thống" },
@@ -57,22 +60,31 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleLogout = () => {
-    showConfirmDialog(
-      "Xác nhận đăng xuất",
-      "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng FitLog?",
-      async () => {
-        try {
-          await authService.logout();
-          router.replace("/auth/login" as any);
-        } catch (e) {
-          console.error("Lỗi khi đăng xuất:", e);
-        }
-      },
-      "Đăng xuất",
-      "Hủy",
-    );
-  };
+  
+const handleLogout = () => {
+  showConfirmDialog(
+    "Xác nhận đăng xuất",
+    "Bạn có chắc chắn muốn đăng xuất?",
+    async () => {
+      try {
+        await authService.logout();
+
+        dispatch(clearWorkouts());
+        dispatch(clearGoals());
+        dispatch(clearReminders());
+
+        setCurrentUser(null);
+
+        router.replace("/auth/login");
+      } catch (e) {
+        console.error("Lỗi đăng xuất:", e);
+      }
+    },
+    "Đăng xuất",
+    "Hủy"
+  );
+};
+
 
   const link = (
     icon: "flag-outline" | "alarm-outline",
@@ -152,22 +164,7 @@ export default function ProfileScreen() {
         </Card>
       )}
 
-      {/* Thẻ Quản Trị Hệ Thống dành riêng cho ADMIN */}
-      {currentUser?.role === "admin" && (
-        <Card style={{ borderColor: "#2563EB", borderWidth: 1 }}>
-          <SectionTitle title="Quyền Quản Trị" />
-          <AppText tone="muted" size="sm">
-            Bạn có quyền truy cập vào bảng điều khiển thống kê và quản lý toàn
-            bộ người dùng.
-          </AppText>
-          <AppButton
-            label="Vào trang Admin Dashboard"
-            icon="analytics-outline"
-            variant="secondary"
-            onPress={() => router.push("/admin/dashboard" as any)}
-          />
-        </Card>
-      )}
+      
 
       {link(
         "flag-outline",

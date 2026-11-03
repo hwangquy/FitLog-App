@@ -26,6 +26,7 @@ function Bootstrap() {
   const remindersLoaded = useAppSelector((s) => s.reminders.loaded);
 
   const [authChecked, setAuthChecked] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
   const segments = useSegments();
 
@@ -33,40 +34,59 @@ function Bootstrap() {
     void initNotifications();
   }, []);
 
-  // 1. Kiểm tra trạng thái Auth mỗi khi thay đổi màn hình (segments)
-  useEffect(() => {
-    if (!hydrated) return;
+//Chưa xác nhận đăng nhập: không tải dữ liệu.
+//Đăng nhập thành công: bắt đầu tải dữ liệu.
+//Chưa có tài khoản: không tự tải danh sách của json-server
+useEffect(() => {
+  if (!hydrated) return;
 
-    const checkAuth = async () => {
-      try {
-        const user = await authService.getCurrentUser();
-        // Kiểm tra xem route hiện tại có nằm trong nhóm 'auth' hay không (auth/login, auth/register)
-        const inAuthGroup = segments[0] === "auth";
+  let cancelled = false;
 
-        if (!user && !inAuthGroup) {
-          // Chưa đăng nhập mà đang ở ngoài -> Đẩy thẳng vào Login
-          router.replace("/auth/login" as any);
-        } else if (user && inAuthGroup) {
-          // Đã đăng nhập nhưng cố vào Login/Register -> Đẩy vào App chính
-          router.replace("/(tabs)");
-        }
-      } catch (e) {
-        console.error("Lỗi kiểm tra Auth:", e);
-      } finally {
+  const checkAuth = async () => {
+    try {
+      const user = await authService.getCurrentUser();
+
+      if (cancelled) return;
+
+      setUserId(user?.id ?? null);
+
+      const inAuthGroup = segments[0] === "auth";
+
+      if (!user && !inAuthGroup) {
+        router.replace("/auth/login");
+      } else if (user && inAuthGroup) {
+        router.replace("/(tabs)");
+      }
+    } catch (error) {
+      if (cancelled) return;
+
+      console.error("Lỗi Auth:", error);
+      setUserId(null);
+      router.replace("/auth/login");
+    } finally {
+      if (!cancelled) {
         setAuthChecked(true);
       }
-    };
+    }
+  };
 
-    void checkAuth();
-  }, [hydrated, segments]);
+  void checkAuth();
 
-  // 2. Tải dữ liệu Redux từ API
-  useEffect(() => {
-    if (!hydrated) return;
-    void dispatch(fetchAllWorkouts());
-    void dispatch(fetchGoals());
-    void dispatch(fetchReminders());
-  }, [hydrated, dispatch]);
+  return () => {
+    cancelled = true;
+  };
+}, [hydrated, segments, router]);
+
+
+useEffect(() => {
+  if (!hydrated || !authChecked || !userId) {
+    return;
+  }
+
+  void dispatch(fetchAllWorkouts());
+  void dispatch(fetchGoals());
+  void dispatch(fetchReminders());
+}, [hydrated, authChecked, userId, dispatch]);
 
   // 3. Đồng bộ thông báo
   useEffect(() => {

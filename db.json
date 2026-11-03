@@ -13,6 +13,13 @@
       "email": "a@example.com",
       "password": "123",
       "role": "user"
+    },
+    {
+      "name": "Nhuhu",
+      "email": "hoangken1211@gmail.com",
+      "password": "huyhoang",
+      "role": "user",
+      "id": "nll0ldM"
     }
   ],
   "workouts": [
@@ -92,9 +99,32 @@
       "id": "r1",
       "title": "Nhắc lịch tập",
       "time": "18:30",
-      "days": [0, 1, 2, 3, 4, 5, 6],
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
       "enabled": true,
       "createdAt": "2026-10-20T00:00:00.000Z"
+    },
+    {
+      "title": "Nhắc lịch tập",
+      "time": "18:30",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "enabled": true,
+      "createdAt": "2026-11-03T13:26:39.723Z",
+      "id": "gIVQOLH"
     }
   ]
 }
